@@ -17,6 +17,7 @@ class WallServiceTest {
             canDelete = true,
             canEdit = true,
             likes = 0
+
         )
 
         val addedPost = WallService.add(testPost)
