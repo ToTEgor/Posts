@@ -13,11 +13,11 @@ data class Post(
 )
 abstract class Attachment (val type : String)
 
-data class Audio (val id : Int, val title : String, val description : String)
+data class Audio (val id : Int, val owner_id : Int, val title : String, val description : String, val date : Int,)
 
 data class AudioAttachment(val audio: Audio) : Attachment("audio")
 
-class Video (val id : Int,val title : String, val description : String)
+data class Video (val id : Int,val title : String, val description : String, val date : Int, val views : Int)
 
 data class VideoAttachment(val video: Video) : Attachment("video")
 
@@ -48,7 +48,7 @@ object WallService {
 
 fun main() {
     val x = WallService
-x.add(Post(1,3,4,2,"ertw","sdfs",true,true,true,11, attachment = arrayOf(AudioAttachment(Audio(1,"Moon","doom")),VideoAttachment(Video(2,"zoo","boom")))))
+x.add(Post(1,3,4,2,"ertw","sdfs",true,true,true,11, attachment = arrayOf(AudioAttachment(Audio(1,12,"doom","cool",22)),VideoAttachment(Video(2,"zoo","boom",11,123)))))
 println(x)
 x.update(Post(1,3,4,5,"sdfs","sdffw",true,false,false,13))
 }
