@@ -1,5 +1,7 @@
+import jdk.internal.vm.vector.VectorSupport.test
 import org.junit.Assert
 import org.junit.Test
+
 
 class WallServiceTest {
 
@@ -90,7 +92,20 @@ class WallServiceTestUpdate {
         val post = Post(1, 1, 1, 123456, "Post 1", "post", false, false, true, 0)
         WallService.add(post)
         val comment = Comment(1, "Test comment")
+        try {
+            WallService.createComment(2, comment)
+        } catch (cat: PostNotFoundException) {
+        }
+    }
+}
 
-        WallService.createComment(1, comment)
+@Test(expected = PostNotFoundException::class)
+fun shouldThrowCom() {
+    val post = Post(1, 1, 1, 123456, "Post 1", "post", false, false, true, 0)
+    WallService.add(post)
+    val comment = Comment(1, "Test comment")
+    try {
+        WallService.createComment(111, comment)
+    } catch (cat: PostNotFoundException) {
     }
 }
