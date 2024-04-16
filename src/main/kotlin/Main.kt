@@ -46,6 +46,12 @@ object WallService {
     var comments = arrayOf<Comment>()
     var countId = 0
 
+    fun clear() {
+        posts = arrayOf()
+        comments = arrayOf()
+        countId = 0
+    }
+
     fun add(post: Post): Post {
         countId++
         posts += post.copy(id = countId)

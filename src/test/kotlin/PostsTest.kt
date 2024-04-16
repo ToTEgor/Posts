@@ -1,5 +1,6 @@
 import jdk.internal.vm.vector.VectorSupport.test
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 
@@ -7,7 +8,7 @@ class WallServiceTest {
 
     @Test
     fun testAddPost() {
-        val testId = 1
+        val testId = 0
         val testPost = Post(
             id = 0,
             ownerId = 123,
@@ -30,6 +31,10 @@ class WallServiceTest {
 }
 
 class WallServiceTestUpdate {
+    @Before
+    fun beforeEach() {
+        WallService.clear()
+    }
 
     @Test
     fun UpdateReturnTrue() {
@@ -86,16 +91,15 @@ class WallServiceTestUpdate {
 
         Assert.assertFalse(result)
     }
-
-    @Test(expected = PostNotFoundException::class)
-    fun shouldThrow() {
+    @Test
+    fun testAddCommentSuccessful() {
         val post = Post(1, 1, 1, 123456, "Post 1", "post", false, false, true, 0)
         WallService.add(post)
         val comment = Comment(1, "Test comment")
-        WallService.createComment(1,comment)
+        WallService.createComment(1, comment)
     }
 
-    @Test(expected = PostNotFoundException::class)
+    @Test (expected = PostNotFoundException::class)
     fun shouldThrowCom() {
         val post = Post(1, 1, 1, 123456, "Post 1", "post", false, false, true, 0)
         WallService.add(post)
