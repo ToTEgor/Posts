@@ -17,6 +17,21 @@ data class Comment(
     val text: String
 )
 
+data class Notes(
+    var title: String,
+    var text: String,
+    val privacy: Int,
+    val comment_privacy: Int,
+    val privacy_view: String,
+    val privacy_comment: String,
+    val note_id: Int,
+    var message: String,
+    val comment_id: Int,
+    val note_ids: String,
+    val user_id: Int,
+    val count: Int,
+)
+
 class PostNotFoundException(s: String) : Exception()
 
 abstract class Attachment(val type: String)
@@ -83,6 +98,102 @@ object WallService {
     }
 }
 
+object NoteService {
+    var notes = mutableListOf<Notes>()
+    var comments = mutableListOf<Comment>()
+
+    fun add(note: Notes): Int {
+        notes += note
+        return note.note_id
+    }
+
+    fun createComment(note_id: Int, comment: Comment): Int {
+        for (note in notes) {
+            if (note.note_id == note_id) {
+                comments += comment
+
+            }
+        }
+        return comments.last().id
+    }
+
+    fun delete(note_id: Int): Boolean {
+        for (note in notes) {
+            if (note.note_id == note_id) {
+                notes.removeAt(note_id - 1)
+            }
+        }
+        return true
+    }
+
+    fun deleteComment(comment_id: Int, comment: Comment): Boolean {
+        for (note in notes) {
+            if (note.comment_id == comment_id) {
+                val index = comments.indexOf(comment)
+                if (index != -1) {
+                    comments.removeAt(index)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun edit(note_id: Int, title: String, text: String): Boolean {
+        for (note in notes) {
+            if (note.note_id == note_id) {
+                note.title = title
+                note.text = text
+                return true
+            }
+        }
+        return false
+    }
+
+    fun editComment(comment_id: Int, message: String): Boolean {
+        for (note in notes) {
+            if (note.comment_id == comment_id) {
+                note.message = message
+                return true
+            }
+        }
+        return false
+    }
+
+    fun get(note_ids: String): List<Notes> {
+        val result = mutableListOf<Notes>()
+        for (note in notes) {
+            if (note.note_ids == note_ids) {
+                result.add(note)
+            }
+        }
+        return result
+    }
+
+
+}
+
+data class Message(val text: String, var read: Boolean = false)
+data class Chat(val messages: MutableList<Message> = mutableListOf())
+class NoChatException : Throwable()
+object ChatService {
+    private val chats = mutableMapOf<Int, Chat>()
+
+    fun addMessage(user_id: Int, message: Message) {
+        chats.getOrPut(user_id) { Chat() }.messages += message
+    }
+
+    fun getUnreadChatsCount() =
+        chats.values.count { chat: Chat -> chat.messages.any { message: Message -> !message.read } }
+
+    fun getLastMessage() = chats.values.map { it.messages.lastOrNull()?.text ?: "no messages" }
+
+    fun getMessage(user_id: Int, count: Int): List<Message> {
+        val chat = chats[user_id] ?: throw NoChatException()
+        return chat.messages.takeLast(count).onEach { it.read = true }
+    }
+}
+
 fun main() {
     val x = WallService
     x.add(
@@ -109,3 +220,4 @@ fun main() {
     println(x)
     x.update(Post(1, 3, 4, 5, "sdfs", "sdffw", true, false, false, 13))
 }
+
