@@ -20,16 +20,10 @@ data class Comment(
 data class Notes(
     var title: String,
     var text: String,
-    val privacy: Int,
-    val comment_privacy: Int,
-    val privacy_view: String,
-    val privacy_comment: String,
     val note_id: Int,
     var message: String,
-    val comment_id: Int,
-    val note_ids: String,
-    val user_id: Int,
-    val count: Int,
+    var comment_id: Int,
+    val comments: MutableList<Comment> = mutableListOf()
 )
 
 class PostNotFoundException(s: String) : Exception()
@@ -110,20 +104,24 @@ object NoteService {
     fun createComment(note_id: Int, comment: Comment): Int {
         for (note in notes) {
             if (note.note_id == note_id) {
+                note.comments += comment
                 comments += comment
-
+                return comment.id
             }
         }
-        return comments.last().id
+        throw PostNotFoundException("Заметка с номером ID $note_id не найден")
     }
 
-    fun delete(note_id: Int): Boolean {
-        for (note in notes) {
+    fun deleteNote(note_id: Int): Boolean {
+        val noteIterator = notes.iterator()
+        while (noteIterator.hasNext()) {
+            val note = noteIterator.next()
             if (note.note_id == note_id) {
-                notes.removeAt(note_id - 1)
+                noteIterator.remove()
+                return true
             }
         }
-        return true
+        return false
     }
 
     fun deleteComment(comment_id: Int, comment: Comment): Boolean {
@@ -160,17 +158,15 @@ object NoteService {
         return false
     }
 
-    fun get(note_ids: String): List<Notes> {
+    fun get(note_id: Int): List<Notes> {
         val result = mutableListOf<Notes>()
         for (note in notes) {
-            if (note.note_ids == note_ids) {
+            if (note.note_id == note_id) {
                 result.add(note)
             }
         }
         return result
     }
-
-
 }
 
 data class Message(val text: String, var read: Boolean = false)
@@ -219,5 +215,7 @@ fun main() {
     )
     println(x)
     x.update(Post(1, 3, 4, 5, "sdfs", "sdffw", true, false, false, 13))
+
+
 }
 
