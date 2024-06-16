@@ -188,9 +188,16 @@ object ChatService {
         val chat = chats[user_id] ?: throw NoChatException()
         return chat.messages.takeLast(count).onEach { it.read = true }
     }
-}
 
-fun main() {
+    fun deleteChat(user_id: Int)  {chats.remove(user_id)}
+
+    fun listChat() = println(chats)
+
+    fun deleteMessage (user_id : Int)
+        { chats[user_id]?.messages?.clear()}
+
+}
+    fun main() {
     val x = WallService
     x.add(
         Post(
